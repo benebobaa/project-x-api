@@ -1,5 +1,5 @@
 postgres:
-	docker run --name postgres12 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -p 5432:5432 -d postgres:12-alpine
+	docker run --name postgres12 --network bene-network -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -p 5432:5432 -d postgres:12-alpine
 
 createdb:
 	docker exec -it postgres12 createdb --username=root --owner=root email_verif
@@ -27,5 +27,8 @@ test:
 
 server:
 	go run main.go
+
+# helper:
+# 	docker run --name simple_x --network bene-network -p 8080:8080 -e GIN_MODE=release -e DB_SOURCE="postgresql://root:root@postgres12:5432/email_verif?sslmode=disable" simple_x:latest
 
 .PHONY: postgres createdb dropdb migrateup migratedown migrateup1 migratedown1 sqlc test server
